@@ -9,7 +9,6 @@ using UnityEngine;
 public class Part : MonoBehaviour, IDisposable {
 	public Maid Maid = new Maid();
 
-
 	[Header("Positional")]
 	/// <summary>
 	/// Defines the 2D model which contains the sprites. Useful for a collage of sprites acting as one.
@@ -20,9 +19,43 @@ public class Part : MonoBehaviour, IDisposable {
 	public Rigidbody2D Rigidbody;
 
 	[Header("Rendering")]
-	public Variable<int> Layer = new Variable<int>(2);
+	private bool _FlipX = false;
+	private bool _FlipY = false;
+	public bool FlipX  {
+		get {return _FlipX;}
+		set { 
+			_FlipX = value; 
+			foreach (Part v in Children) {
+				if (v) {
+					v.FlipX = value;
+				}
+			}
+			foreach (SpriteRenderer v in Renders) {
+				if (v) {
+					v.flipX = value;
+				}
+			}
+		}
+	}
+	public bool FlipY  {
+		get {return _FlipY;}
+		set { 
+			_FlipY = value; 
+			foreach (Part v in Children) {
+				if (v) {
+					v.FlipY = value;
+				}
+			}
+			foreach (SpriteRenderer v in Renders) {
+				if (v) {
+					v.flipY = value;
+				}
+			}
+		}
+	}
 
-	private List<Renderer> Renders = new List<Renderer>();
+
+	private List<SpriteRenderer> Renders = new List<SpriteRenderer>();
 	private List<Part> Children = new List<Part>();
 
 	/// <summary>
@@ -41,7 +74,7 @@ public class Part : MonoBehaviour, IDisposable {
 		foreach (Part v in Model.GetComponentsInChildren(typeof(Part))) {
 			Children.Add(v);
 		}
-		foreach (Renderer v in Model.GetComponentsInChildren(typeof(Renderer))) {
+		foreach (SpriteRenderer v in Model.GetComponentsInChildren(typeof(SpriteRenderer))) {
 			if (Children.Count > 0) {
 				foreach (Part b in Children) {
 					if (!v.gameObject.transform.IsChildOf(b.gameObject.transform)) {
@@ -63,7 +96,7 @@ public class Part : MonoBehaviour, IDisposable {
 					v.Visible.Value = val;
 				}
 			}
-			foreach (Renderer v in Renders) {
+			foreach (SpriteRenderer v in Renders) {
 				if (v) {
 					v.enabled = val;
 				}
@@ -72,23 +105,7 @@ public class Part : MonoBehaviour, IDisposable {
 		});
 		visibleChange.Name = "visibleChange";
 		Maid.GiveTask(visibleChange);
-
 		Visible.Call();
-
-		//Changes if the part should be rendered depending on the Visible value.
-		Listener<int> layerChange = Layer.Connect((int val) => {
-			foreach (Part v in Children) {
-				v.Layer.Value = val;
-			}
-			foreach (Renderer v in Renders) {
-				v.sortingOrder = val;
-			}
-			return true;
-		});
-		layerChange.Name = "layerChange";
-		Maid.GiveTask(layerChange);
-
-		Layer.Call();
 	}
 
 	public virtual void Dispose() {

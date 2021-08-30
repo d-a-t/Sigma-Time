@@ -12,7 +12,7 @@ using UnityEngine;
 /// </para>
 /// </remarks>
 public class Character : Part {
-	public Animator AnimatorContoller;
+	public Animator Animator;
 
 	[Header("Health")]
 	public int MaxHealth = 100;
@@ -88,7 +88,7 @@ public class Character : Part {
 	public override void Start() {
 		base.Start();
 
-		Maid.GiveTask(new Action(delegate() {
+		Maid.GiveTask(new Action(delegate () {
 			foreach (Tool tool in Inventory) {
 				tool.Dispose();
 			}
@@ -128,15 +128,21 @@ public class Character : Part {
 			_CurrentSpeed.Value = newVel.magnitude;
 			*/
 
+			if (DesiredCharDirection.x < 0) {
+				FlipX = true;
+			} else if (DesiredCharDirection.x > 0) {
+				FlipX = false;
+			}
+
 			if (DesiredCharDirection.magnitude == 0) {
 				Rigidbody.AddForce((new Vector2(Rigidbody.velocity.x, 0) * -StopSpeed) * dt);
 			} else if (Rigidbody.velocity.magnitude < MaxWalkSpeed) {
 				Rigidbody.AddForce(((DesiredCharDirection.normalized * RunSpeed) - Rigidbody.velocity) * dt);
 			}
 
-			
+
 			_CurrentSpeed.Value = Rigidbody.velocity.magnitude;
-			AnimatorContoller.SetFloat("Velocity", _CurrentSpeed.Value);
+			Animator.SetFloat("Velocity", _CurrentSpeed.Value);
 			return true;
 		});
 		moveUpdate.Name = "moveUpdate";

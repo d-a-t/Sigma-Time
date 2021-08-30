@@ -133,39 +133,16 @@ public sealed class PlayerController : Singleton {
 		updateCam.Name = "updateCam";
 		Char.Maid.GiveTask(updateCam);
 
-		int currentToolIndex = 0;
-		//Switching weapons
-		Listener<float> switchWeapons = InputController.Mouse.Wheel.Delta.Connect((float val) => {
-			if (!Char.CurrentTool || Char.CurrentTool.CanUnequip) {
-				if (val > 0) {
-					currentToolIndex++;
-					if (currentToolIndex > Char.Inventory.Count - 1) {
-						currentToolIndex = 0;
-					}
-				} else if (val < 0) {
-					currentToolIndex--;
-					if (currentToolIndex < 0) {
-						currentToolIndex = Char.Inventory.Count - 1;
-					}
-				}
-				Char.SwitchTool(Char.Inventory[currentToolIndex]);
-				if (Char.CurrentTool is Gun) {
-					Gun gun = (Gun)Char.CurrentTool;
-
-					BulletBar.setMaxAmmo(gun.MaxAmmo);
-
-					BindAmmoToGui?.Destroy();
-					BindAmmoToGui = gun.Ammo.Connect((int val) => {
-						BulletBar.setAmmo(val);
-						return true;
-					});
-					BindAmmoToGui.Call(gun.Ammo.Value);
-				}
+		//Binding Attack
+		Listener<bool> slashSword = InputController.Keyboard[KeyCode.Mouse0].Connect((bool val) => {
+			if (val) {
+				Char.Animator.SetTrigger("Attack");
 			}
 			return true;
 		});
-		toggleRun.Name = "toggleRun";
-		Char.Maid.GiveTask(toggleRun);
+		slashSword.Name = "slashSword";
+		Char.Maid.GiveTask(slashSword);
+
 
 		Maid.GiveTask(Char);
 	}
