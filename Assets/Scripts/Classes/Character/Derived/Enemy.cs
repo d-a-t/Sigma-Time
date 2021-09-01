@@ -30,12 +30,12 @@ public class Enemy : Character {
 
 	public void WalkTowardsTarget() {
 		if (Target) {
-			DesiredCharDirection = (Target.position - transform.position).AsVector2();
+			DesiredCharDirection.Value = (Target.position - transform.position).AsVector2();
 		}
 	}
 
 	public void Stop() {
-		DesiredCharDirection = new Vector2();
+		DesiredCharDirection.Value = new Vector2();
 	}
 
 	public void BurstShoot() {

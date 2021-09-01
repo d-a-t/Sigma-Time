@@ -88,11 +88,11 @@ public sealed class PlayerController : Singleton {
 		//Binding the D key to move the character right.
 		Listener<bool> moveRight = InputController.Keyboard[KeyCode.D].Connect((bool val) => {
 			if (val) {
-				Char.DesiredCharDirection.x = 1;
+				Char.DesiredCharDirection.Value = new Vector2(1 , Char.DesiredCharDirection.Value.y);;
 			} else if (InputController.Keyboard[KeyCode.A].Value) {
-				Char.DesiredCharDirection.x = -1;
+				Char.DesiredCharDirection.Value = new Vector2(-1 , Char.DesiredCharDirection.Value.y);
 			} else {
-				Char.DesiredCharDirection.x = 0;
+				Char.DesiredCharDirection.Value = new Vector2(0 , Char.DesiredCharDirection.Value.y);;
 			}
 			return true;
 		});
@@ -102,11 +102,11 @@ public sealed class PlayerController : Singleton {
 		//Binding the A key to move the character left.
 		Listener<bool> moveLeft = InputController.Keyboard[KeyCode.A].Connect((bool val) => {
 			if (val) {
-				Char.DesiredCharDirection.x = -1;
+				Char.DesiredCharDirection.Value = new Vector2(-1 , Char.DesiredCharDirection.Value.y);
 			} else if (InputController.Keyboard[KeyCode.D].Value) {
-				Char.DesiredCharDirection.x = 1;
+				Char.DesiredCharDirection.Value = new Vector2(1 , Char.DesiredCharDirection.Value.y);
 			} else {
-				Char.DesiredCharDirection.x = 0;
+				Char.DesiredCharDirection.Value = new Vector2(0 , Char.DesiredCharDirection.Value.y);
 			}
 			return true;
 		});
@@ -117,6 +117,21 @@ public sealed class PlayerController : Singleton {
 		Listener<bool> toggleRun = InputController.Keyboard[KeyCode.LeftShift].Connect((bool val) => {
 			//ternary operator yo
 			Char.DesiredSpeed.Value = (val) ? Config.Player.Movement.RunSpeed : Config.Player.Movement.WalkSpeed;
+			return true;
+		});
+		toggleRun.Name = "toggleRun";
+		Char.Maid.GiveTask(toggleRun);
+
+		//Dash keystroke
+		Listener<bool> dashForward = InputController.KeyStroke[Config.Player.Controls.Movement.DashForward].Connect((bool val) => {
+			if (val) {
+				Char.DesiredCharDirection.Value = new Vector2(1, 0);
+				Char.DesiredCharDirection.Locked = true;
+			} else {
+				Char.DesiredCharDirection.Locked = false;
+				InputController.Keyboard[KeyCode.A].Call();
+				InputController.Keyboard[KeyCode.D].Call();
+			}
 			return true;
 		});
 		toggleRun.Name = "toggleRun";

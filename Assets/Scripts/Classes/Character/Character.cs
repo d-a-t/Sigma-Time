@@ -32,7 +32,7 @@ public class Character : Part {
 	public float MaxWalkSpeed = Config.Player.Movement.WalkSpeed;
 	public float MaxRunSpeed = Config.Player.Movement.RunSpeed;
 
-	public Vector2 DesiredCharDirection = new Vector2();
+	public Variable<Vector2> DesiredCharDirection = new Variable<Vector2>();
 
 	[Space]
 	[SerializeField] private readonly Variable<float> _CurrentSpeed = new Variable<float>(0);
@@ -104,7 +104,7 @@ public class Character : Part {
 
 		//This binded functions smoothly updates Character position depending on CharDirection.
 		Listener<float> moveUpdate = Runservice.BindToFixedUpdate(Global.RunservicePriority.Heartbeat.Physics, (float dt) => {
-			Vector2 DesiredVelocity = DesiredCharDirection.normalized * DesiredSpeed.Value;
+			Vector2 DesiredVelocity = DesiredCharDirection.Value.normalized * DesiredSpeed.Value;
 			//Vector2 newVel = Rigidbody.velocity.AsVector2();
 			/*
 			if (DesiredVelocity.magnitude == 0 && newVel.magnitude < (Config.Player.Movement.AccelSpeed * dt * 1.1)) {
@@ -128,16 +128,16 @@ public class Character : Part {
 			_CurrentSpeed.Value = newVel.magnitude;
 			*/
 
-			if (DesiredCharDirection.x < 0) {
+			if (DesiredCharDirection.Value.x < 0) {
 				FlipX = true;
-			} else if (DesiredCharDirection.x > 0) {
+			} else if (DesiredCharDirection.Value.x > 0) {
 				FlipX = false;
 			}
 
-			if (DesiredCharDirection.magnitude == 0) {
+			if (DesiredCharDirection.Value.magnitude == 0) {
 				Rigidbody.AddForce((new Vector2(Rigidbody.velocity.x, 0) * -StopSpeed) * dt);
 			} else if (Rigidbody.velocity.magnitude < MaxWalkSpeed) {
-				Rigidbody.AddForce(((DesiredCharDirection.normalized * RunSpeed) - Rigidbody.velocity) * dt);
+				Rigidbody.AddForce(((DesiredCharDirection.Value.normalized * RunSpeed) - Rigidbody.velocity) * dt);
 			}
 
 

@@ -15,5 +15,10 @@ namespace Config {
 
 			public static float AccelSpeed = 100;
 		}
+		public static class Controls {
+			public static class Movement {
+				public static KeyStroke DashForward = new KeyStroke(new List<(KeyCode, float)> {(KeyCode.W, .25F),(KeyCode.W, .25F)} );
+			}
+		}
 	}
 }
